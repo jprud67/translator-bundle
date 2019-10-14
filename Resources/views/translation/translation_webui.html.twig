@@ -1,0 +1,156 @@
+{% trans_default_domain 'jprud67translator' %}
+<!doctype html>
+<html locale="{{ app.request.locale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Translation webui</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('bundles/jprud67translator/assets/bootstrap.min.css') }}" >
+        <link rel="stylesheet" href="{{ asset('bundles/jprud67translator/assets/font-awesome.min.css') }}" >
+    {% endblock %}
+</head>
+<body>
+<div class="container" id="translation_container"
+     data-trans-path="{{ path('jprud67_translation_load') }}"
+     data-trans-save-path="{{ path('jprud67_translation_save') }}"
+>
+    <div class="col-md-10">
+        {% for datakey,metaData in metaDataArray %}
+            <h3 class="nomargin_top text-center">{{ metaData.className }}</h3>
+            <div class="accordion" id="{{ metaData.className }}-{{ datakey }}">
+                {%  set count=0 %}
+                {% if metaData.fields is defined %}
+                    {% for key,fields in metaData.fields %}
+                        <div class="card">
+                            <div class="card-header" id="heading{{ metaData.className }}-{{ datakey }}">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{metaData.className}}{{key}}{{count}}" aria-expanded="true" aria-controls="collapse{{metaData.className}}{{key}}{{count}}">
+                                        {{ key }}
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse{{metaData.className}}{{key}}{{count}}" class="collapse show" aria-labelledby="heading{{ metaData.className }}-{{ datakey }}" data-parent="#{{ metaData.className }}-{{ datakey }}">
+                                <div class="card-body">
+
+                                    {% for fieldkey,field in fields %}
+                                        <div class="accordion" id="{{ metaData.className }}{{ fieldkey }}{{ field.foreignKey }}">
+                                            <div class="card">
+                                                <div class="card-header" id="heading{{ metaData.className }}{{ fieldkey }}{{ field.foreignKey }}">
+                                                    <h2 class="mb-0">
+                                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse{{metaData.className}}{{key}}{{count}}{{fieldkey}}" aria-expanded="false" aria-controls="collapseTwo">
+                                                            {{ field.content|raw}}
+                                                        </button>
+                                                    </h2>
+                                                </div>
+                                                <div id="collapse{{metaData.className}}{{key}}{{count}}{{fieldkey}}" class="collapse" aria-labelledby="heading{{ metaData.className }}{{ fieldkey }}{{ field.foreignKey }}" data-parent="#{{ metaData.className }}{{ fieldkey }}{{ field.foreignKey }}">
+                                                    <div class="card-body">
+                                                        {% for locale in locales %}
+                                                            <div class="form-group">
+
+                                                                <label  for="content">{{ "content"|trans }} : {{ locale }}</label>
+
+                                                                {# <button class="pull-right btn btn-sm btn-default trans-editor" data-content-id="{{ metaData.className~key~locale }}"> <i class="fa fa-refresh"> </i> Ckeditor</button>#}
+                                                                <button class="float-right btn btn-sm btn-outline-primary trans-save"><i class="fa fa-save"> </i> {{ "save"|trans }}</button>
+                                                                {% if field.type is defined and field.type != null and field.type == 'text' %}
+                                                                    <textarea name="{{ metaData.className~key~locale }}" class="form-control trans_editor" id="{{ metaData.className~key~locale }}"   data-trans-foreignKey="{{ field.foreignKey }}" data-trans-field="{{ key }}" data-trans-locale="{{ locale }}" data-trans-class-name="{{ metaData.className }}" data-trans-class="{{  metaData.class  }}"></textarea>
+
+                                                                {% else %}
+                                                                    <textarea name="{{ metaData.className~key~locale }}" class="form-control" id="{{ metaData.className~key~locale }}"  rows="4" data-trans-foreignKey="{{ field.foreignKey }}" data-trans-field="{{ key }}" data-trans-locale="{{ locale }}" data-trans-class-name="{{ metaData.className }}" data-trans-class="{{  metaData.class  }}"></textarea>
+
+                                                                {% endif %}
+
+                                                            </div>
+                                                            <hr>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                        {%   set count=count+1 %}
+                    {% endfor %}
+                {% else %}
+                    <h1>{{ "nodata"|trans }}</h1>
+                {% endif %}
+
+            </div>
+        {% endfor %}
+
+
+
+    </div><!-- End col-md-9 -->
+</div>
+{% block javascripts %}
+    <script src="{{ asset('bundles/jprud67translator/assets/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ asset('bundles/jprud67translator/assets/popper.min.js') }}" ></script>
+    <script src="{{ asset('bundles/jprud67translator/assets/bootstrap.min.js') }}" ></script>
+    <script src="{{ asset('bundles/jprud67translator/assets/sweetalert2@8.js') }}" ></script>
+{% endblock %}
+<script>
+
+    (function($){
+        let url=$("#translation_container");
+
+        $(".trans-save").click(function (e) {
+            e.preventDefault();
+            let content_el=$(this).next("textarea");
+            $.ajax({
+                url : url.attr("data-trans-save-path"),
+                data:  {
+                    field: content_el.attr("data-trans-field"),
+                    locale: content_el.attr("data-trans-locale"),
+                    class: content_el.attr("data-trans-class"),
+                    foreignKey: content_el.attr("data-trans-foreignKey"),
+                    content: content_el.val(),
+                },
+                type : 'POST',
+                dataType : 'json',
+                success : function(code_json, statut){
+                    Swal.fire({
+                        type: 'success',
+                        title: code_json,
+                    })
+                },
+                error : function(resultat, statut, erreur){
+                },
+                complete : function(resultat, statut){
+                }
+            });
+
+        });
+
+        $.ajax({
+            url : url.attr("data-trans-path"),
+            type : 'GET',
+            dataType : 'json',
+            success : function(data, statut){
+                let translations=data.trans;
+                for (let trans of translations ) {
+                    let objectClass=trans.objectClass;
+                    let  className=objectClass.split("\\");
+                    className=className[className.length-1];
+                    $("#"+className+trans.field+trans.locale).val(trans.content)
+                }
+            },
+            error : function(resultat, statut, erreur){
+            },
+            complete : function(resultat, statut){
+            }
+        });
+
+
+    })(jQuery);
+
+
+</script>
+
+</body>
+</html>

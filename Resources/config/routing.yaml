@@ -1,0 +1,4 @@
+jprud67_translation_routing:
+    resource: "@Jprud67TranslatorBundle/Controller/TranslationController.php"
+    prefix:   /translation
+    type:     annotation

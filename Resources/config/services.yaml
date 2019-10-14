@@ -1,0 +1,25 @@
+services:
+    Jprud67\TranslatorBundle\Annotation\Reader\TranslatableAnnotationReader:
+        arguments: ['@annotations.reader']
+    Jprud67\TranslatorBundle\Annotation\Translatable:
+    Jprud67\TranslatorBundle\Annotation\TranslatableField:
+    Jprud67\TranslatorBundle\Controller\TranslationController:
+        arguments: ['@doctrine.orm.default_entity_manager', '@Jprud67\TranslatorBundle\Annotation\Reader\TranslatableAnnotationReader','@translator.data_collector','@annotations.reader','@?']
+        calls:
+        - [setContainer, ['@service_container']]
+        tags:
+        - { name: controller.service_arguments }
+        - { name: container.service_subscriber }
+
+    Jprud67\TranslatorBundle\Repository\TranslationRepository:
+        arguments: ['@doctrine']
+        tags:
+        - { name: doctrine.repository_service }
+    Jprud67\TranslatorBundle\Util\Trans:
+        arguments: ['@doctrine.orm.default_entity_manager']
+
+    Jprud67\TranslatorBundle\Twig\Jprud67TranslatorExtension:
+        tags:
+        - { name: twig.extension }
+        arguments:
+          ['@request_stack', '@doctrine.orm.default_entity_manager']

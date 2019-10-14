@@ -1,0 +1,23 @@
+{
+    "name": "jprud67/translator-bundle",
+    "type": "symfony-bundle",
+    "description": "This set offers you the possibility to add a content translation to your symfony website very easily.",
+    "keywords": ["translator", "translation"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Prudence Dieudonné Assogba",
+            "email": "jprud67@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "symfony/framework-bundle": ">= 4.0",
+        "doctrine/doctrine-bundle": "*",
+        "symfony/twig-bundle": "4.*.*"
+    } ,
+    "autoload":     {
+        "psr-4": { "Jprud67\\TranslatorBundle\\": "" }
+    },
+    "minimum-stability": "dev"
+}
