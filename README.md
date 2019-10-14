@@ -37,7 +37,7 @@ jprud67_translation_routing:
              Jprud67_translator:
                  is_bundle: false
                  type: annotation
-                 dir: '%kernel.project_dir%/Jprud67/translator-bundle/Entity'
+                 dir: '%kernel.project_dir%/vendor/Jprud67/translator-bundle/Entity'
                  prefix: 'Jprud67\TranslatorBundle\Entity'
                  alias: Jprud67_translator
  jprud67_translator:
@@ -54,7 +54,8 @@ jprud67_translation_routing:
  
      php bin/console asset:install
      
-##Using TranslatorBundle
+# Using TranslatorBundle
+
 1: Add annotations to your entity
 
 
