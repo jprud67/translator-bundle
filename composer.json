@@ -12,9 +12,9 @@
     ],
     "require": {
         "php": ">=7.0",
-        "symfony/framework-bundle": ">= 4.0",
+        "symfony/framework-bundle": ">= 5.0",
         "doctrine/doctrine-bundle": "*",
-        "symfony/twig-bundle": "4.*.*"
+        "symfony/twig-bundle": "5.*.*"
     } ,
     "autoload":     {
         "psr-4": { "Jprud67\\TranslatorBundle\\": "" }
