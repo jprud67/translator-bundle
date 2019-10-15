@@ -18,6 +18,7 @@
      data-trans-save-path="{{ path('jprud67_translation_save') }}"
 >
     <div class="col-md-10">
+
         {% for datakey,metaData in metaDataArray %}
             <h3 class="nomargin_top text-center">{{ metaData.className }}</h3>
             <div class="accordion" id="{{ metaData.className }}-{{ datakey }}">
@@ -55,13 +56,13 @@
 
                                                                 {# <button class="pull-right btn btn-sm btn-default trans-editor" data-content-id="{{ metaData.className~key~locale }}"> <i class="fa fa-refresh"> </i> Ckeditor</button>#}
                                                                 <button class="float-right btn btn-sm btn-outline-primary trans-save"><i class="fa fa-save"> </i> {{ "save"|trans }}</button>
-                                                                {% if field.type is defined and field.type != null and field.type == 'text' %}
+                                                               {# {% if field.type is defined and field.type != null and field.type == 'text' %}
                                                                     <textarea name="{{ metaData.className~key~locale }}" class="form-control trans_editor" id="{{ metaData.className~key~locale }}"   data-trans-foreignKey="{{ field.foreignKey }}" data-trans-field="{{ key }}" data-trans-locale="{{ locale }}" data-trans-class-name="{{ metaData.className }}" data-trans-class="{{  metaData.class  }}"></textarea>
 
-                                                                {% else %}
-                                                                    <textarea name="{{ metaData.className~key~locale }}" class="form-control" id="{{ metaData.className~key~locale }}"  rows="4" data-trans-foreignKey="{{ field.foreignKey }}" data-trans-field="{{ key }}" data-trans-locale="{{ locale }}" data-trans-class-name="{{ metaData.className }}" data-trans-class="{{  metaData.class  }}"></textarea>
+                                                                {% else %}#}
+                                                                    <textarea name="{{ metaData.className~key~field.foreignKey~locale }}" class="form-control" id="{{ metaData.className~key~field.foreignKey~locale }}"  rows="4" data-trans-foreignKey="{{ field.foreignKey }}" data-trans-field="{{ key }}" data-trans-locale="{{ locale }}" data-trans-class-name="{{ metaData.className }}" data-trans-class="{{  metaData.class  }}"></textarea>
 
-                                                                {% endif %}
+                                                                {#{% endif %}#}
 
                                                             </div>
                                                             <hr>
@@ -93,64 +94,8 @@
     <script src="{{ asset('bundles/jprud67translator/assets/popper.min.js') }}" ></script>
     <script src="{{ asset('bundles/jprud67translator/assets/bootstrap.min.js') }}" ></script>
     <script src="{{ asset('bundles/jprud67translator/assets/sweetalert2@8.js') }}" ></script>
+    <script src="{{ asset('bundles/jprud67translator/assets/trans.js') }}" ></script>
 {% endblock %}
-<script>
-
-    (function($){
-        let url=$("#translation_container");
-
-        $(".trans-save").click(function (e) {
-            e.preventDefault();
-            let content_el=$(this).next("textarea");
-            $.ajax({
-                url : url.attr("data-trans-save-path"),
-                data:  {
-                    field: content_el.attr("data-trans-field"),
-                    locale: content_el.attr("data-trans-locale"),
-                    class: content_el.attr("data-trans-class"),
-                    foreignKey: content_el.attr("data-trans-foreignKey"),
-                    content: content_el.val(),
-                },
-                type : 'POST',
-                dataType : 'json',
-                success : function(code_json, statut){
-                    Swal.fire({
-                        type: 'success',
-                        title: code_json,
-                    })
-                },
-                error : function(resultat, statut, erreur){
-                },
-                complete : function(resultat, statut){
-                }
-            });
-
-        });
-
-        $.ajax({
-            url : url.attr("data-trans-path"),
-            type : 'GET',
-            dataType : 'json',
-            success : function(data, statut){
-                let translations=data.trans;
-                for (let trans of translations ) {
-                    let objectClass=trans.objectClass;
-                    let  className=objectClass.split("\\");
-                    className=className[className.length-1];
-                    $("#"+className+trans.field+trans.locale).val(trans.content)
-                }
-            },
-            error : function(resultat, statut, erreur){
-            },
-            complete : function(resultat, statut){
-            }
-        });
-
-
-    })(jQuery);
-
-
-</script>
 
 </body>
 </html>

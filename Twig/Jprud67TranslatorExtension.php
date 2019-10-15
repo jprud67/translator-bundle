@@ -50,13 +50,21 @@ class Jprud67TranslatorExtension extends AbstractExtension
 
     public function jprud67_trans($entity,$field)
     {
+        $reflection=new \ReflectionClass($entity);
+        $name_array=explode("\\",$reflection->getName());
+        $objectClass=$reflection->getName();
+        if ($name_array[0]=="Proxies"){
+            $name_array=array_slice($name_array,"2");
+            $objectClass=implode('\\', $name_array);
+        }
         $locale=$this->requestStack->getCurrentRequest()->getLocale();
         $translation=$this->objectManager->getRepository(Translation::class)->findOneBy([
-            "objectClass"=>get_class($entity),
+            "objectClass"=>$objectClass,
             "locale"=>$locale,
             "field"=>$field,
             "foreignKey"=>$entity->getId()
         ]);
+
 
         $method="get".ucfirst($field);
 
